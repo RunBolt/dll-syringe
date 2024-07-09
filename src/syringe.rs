@@ -418,8 +418,14 @@ impl LoadLibraryWStub {
 
         Syringe::remote_exit_code_to_error_or_exception(exit_code)?;
 
-        let injected_module_handle = self.result.read()?;
-        assert!(!injected_module_handle.is_null());
+        let injected_module_handle =
+            self.result
+                .read()
+                .map_err(Into::into)
+                .and_then(|handle| match handle.is_null() {
+                    true => Err(InjectError::LoadLibraryWNotFound),
+                    false => Ok(handle),
+                })?;
 
         Ok(injected_module_handle)
     }

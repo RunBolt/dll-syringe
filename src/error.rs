@@ -233,6 +233,9 @@ pub enum InjectError {
     #[cfg(feature = "into-x86-from-x64")]
     #[error("failed to load pe file: {}", _0)]
     Goblin(#[from] goblin::error::Error),
+    /// LoadLibraryW fn not found inside target process
+    #[error("LoadLibraryW fn not found inside target process")]
+    LoadLibraryWNotFound,
 }
 
 #[cfg(feature = "syringe")]
@@ -485,6 +488,9 @@ pub enum SyringeError {
     #[cfg(feature = "into-x86-from-x64")]
     #[error("failed to load pe file: {}", _0)]
     Goblin(#[from] goblin::error::Error),
+    /// LoadLibraryW fn not found inside target process
+    #[error("LoadLibraryW fn not found inside target process")]
+    LoadLibraryWNotFound,
 }
 
 #[cfg(feature = "syringe")]
@@ -541,6 +547,7 @@ impl From<InjectError> for SyringeError {
             #[cfg(target_arch = "x86_64")]
             #[cfg(feature = "into-x86-from-x64")]
             InjectError::Goblin(e) => Self::Goblin(e),
+            InjectError::LoadLibraryWNotFound => Self::LoadLibraryWNotFound,
         }
     }
 }
